@@ -1,0 +1,34 @@
+# utils/constants.py
+# A central place for all constant values used throughout the application.
+
+# --- MIME Types ---
+MIME_TYPE_SCREEN_ID = 'application/x-screen-id'
+
+# --- Clipboard Content Types ---
+CLIPBOARD_TYPE_HMI_OBJECTS = 'hmi_objects'
+CLIPBOARD_TYPE_TAG = 'tag'
+CLIPBOARD_TYPE_TAG_DATABASE = 'tag_database'
+CLIPBOARD_TYPE_SCREEN = 'screen'
+
+# --- Tool Names ---
+TOOL_SELECT = 'select'
+TOOL_BUTTON = 'button'
+TOOL_TEXT = 'text'
+TOOL_LINE = 'line'
+TOOL_POLYLINE = 'polyline'
+TOOL_RECTANGLE = 'rectangle'
+TOOL_POLYGON = 'polygon'
+TOOL_CIRCLE = 'circle'
+TOOL_ARC = 'arc'
+TOOL_SECTOR = 'sector'
+TOOL_TABLE = 'table'
+TOOL_SCALE = 'scale'
+TOOL_IMPORT_IMAGE = 'import_image'
+TOOL_FREEHAND = 'freehand'
+TOOL_SHAPE_LIBRARY = 'shape_library'
+
+# --- Project Tree Item Types ---
+PROJECT_TREE_ITEM_PROJECT_INFO = 'project_info'
+PROJECT_TREE_ITEM_SYSTEM = 'system'
+PROJECT_TREE_ITEM_SCREENS = 'screens'
+PROJECT_TREE_ITEM_TAGS_ROOT = 'tags_root'

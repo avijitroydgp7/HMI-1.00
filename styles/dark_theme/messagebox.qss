@@ -1,0 +1,78 @@
+/* Message box styling for dark theme - modern dark with proper popup backgrounds */
+
+/* Import variables */
+@import url("variables.qss");
+
+QMessageBox {
+    background-color: var(--popup-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--popup-border);
+    border-radius: var(--radius-large);
+}
+
+QMessageBox QPushButton {
+    background-color: var(--accent-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--accent-primary);
+    padding: var(--padding-medium) var(--padding-large);
+    border-radius: var(--radius-medium);
+    font-weight: bold;
+    min-width: calc(var(--padding-large) * 2);
+}
+
+QMessageBox QPushButton:hover {
+    background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
+}
+
+QMessageBox QPushButton:pressed {
+    background-color: var(--accent-pressed);
+    border-color: var(--accent-pressed);
+}
+
+QMessageBox QLabel {
+    color: var(--text-primary);
+}
+
+QMessageBox QCheckBox {
+    color: var(--text-primary);
+    spacing: var(--padding-medium);
+    background-color: transparent;
+}
+
+QMessageBox QCheckBox::indicator {
+    width: var(--padding-large);
+    height: var(--padding-large);
+    background-color: transparent;
+    border: none;
+}
+
+QMessageBox QCheckBox::indicator:unchecked {
+    image: url("styles/dark_theme/icons/checkbox-unchecked.svg");
+}
+
+QMessageBox QCheckBox::indicator:checked {
+    image: url("styles/dark_theme/icons/checkbox-checked.svg");
+}
+
+QMessageBox QCheckBox::indicator:indeterminate {
+    image: url("styles/dark_theme/icons/checkbox-indeterminate.svg");
+}
+
+QMessageBox QCheckBox::indicator:unchecked:hover,
+QMessageBox QCheckBox::indicator:checked:hover,
+QMessageBox QCheckBox::indicator:indeterminate:hover {
+    opacity: 0.8;
+}
+
+QMessageBox QCheckBox::indicator:unchecked:disabled,
+QMessageBox QCheckBox::indicator:checked:disabled,
+QMessageBox QCheckBox::indicator:indeterminate:disabled {
+    opacity: 0.4;
+}
+
+/* Ensure proper background for message box container */
+QWidget {
+    background-color: var(--popup-bg);
+    color: var(--text-primary);
+}

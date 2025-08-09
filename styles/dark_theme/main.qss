@@ -1,0 +1,69 @@
+/* icon_color: var(--text-primary) */
+/* icon_color_active: var(--text-primary) */
+/* highlight_color: var(--accent-primary) */
+
+/* styles/main.qss */
+
+/* Import variables */
+@import url("variables.qss");
+
+/* General styles for the main window, menu, and status bar. */
+QMainWindow {
+    background-color: var(--bg-secondary);
+    /* Ensure proper alignment of central widget */
+}
+
+QMenuBar {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: var(--padding-medium);
+    /* Ensure menu bar is properly aligned */
+    alignment: left;
+}
+
+QMenuBar::item {
+    padding: var(--padding-small) var(--padding-medium);
+    /* Ensure consistent spacing between menu items */
+    spacing: var(--radius-small);
+}
+
+QMenuBar::item:selected {
+    background-color: var(--accent-primary);
+}
+
+QMenu {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+    /* Add padding to menu items for better alignment */
+    padding: var(--padding-small);
+}
+
+QMenu::item {
+    padding: var(--padding-small) var(--padding-medium);
+}
+
+QMenu::item:selected {
+    background-color: var(--accent-primary);
+}
+
+QStatusBar {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-weight: bold;
+    /* Ensure status bar items are properly aligned */
+}
+
+QStatusBar::item {
+    border: none;
+    /* Add spacing between status bar items */
+    margin: 0 var(--padding-small);
+}
+
+QStatusBar > QWidget > QLabel {
+    padding: 0 var(--padding-small);
+    color: var(--text-primary);
+    font-weight: normal;
+    /* Ensure labels in status bar are vertically centered */
+    alignment: vertical-center;
+}

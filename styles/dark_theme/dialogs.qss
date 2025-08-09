@@ -1,0 +1,92 @@
+/* Dialog styling for dark theme - specific dialog styles only */
+
+/* Import base styles (includes variables) */
+@import url("base.qss");
+
+/* Dialog-specific container styling with rounded corners on all sides */
+QWidget#DialogContainer {
+    background-color: var(--popup-bg);
+    border: 1px solid var(--popup-border);
+    border-radius: var(--radius-large);
+}
+
+/* Title bar styling with rounded corners on top */
+QWidget#TitleBar {
+    background-color: var(--popup-title-bg);
+    border-top-left-radius: var(--radius-large);
+    border-top-right-radius: var(--radius-large);
+    border-bottom: 1px solid var(--popup-border);
+    min-height: calc(var(--padding-large) * 2);
+}
+
+QLabel#TitleLabel {
+    font-size: var(--padding-large);
+}
+
+QPushButton#CloseButton {
+    background-color: transparent;
+    border: none;
+    font-size: var(--padding-large);
+    padding: var(--padding-small);
+    min-width: var(--padding-large);
+    min-height: var(--padding-large);
+}
+
+QPushButton#CloseButton:hover {
+    background-color: #f85149;
+    color: #ffffff;
+    border-radius: var(--radius-small);
+}
+
+/* Global dialog styling for all popup windows */
+QDialog {
+    background-color: var(--popup-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--popup-border);
+    border-radius: var(--radius-large);
+}
+
+/* Message box specific styling */
+QMessageBox {
+    background-color: var(--popup-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--popup-border);
+    border-radius: var(--radius-large);
+}
+
+/* Input dialog styling */
+QInputDialog {
+    background-color: var(--popup-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--popup-border);
+    border-radius: var(--radius-large);
+}
+
+/* File dialog styling */
+QFileDialog {
+    background-color: var(--popup-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--popup-border);
+    border-radius: var(--radius-large);
+}
+
+/* Color dialog styling */
+QColorDialog {
+    background-color: var(--popup-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--popup-border);
+    border-radius: var(--radius-large);
+}
+
+/* Font dialog styling */
+QFontDialog {
+    background-color: var(--popup-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--popup-border);
+    border-radius: var(--radius-large);
+}
+
+/* Message box specific button sizing */
+QMessageBox QPushButton {
+    min-width: calc(var(--padding-large) * 2);
+}

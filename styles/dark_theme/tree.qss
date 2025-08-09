@@ -1,0 +1,49 @@
+/* Tree widget styling for dark theme - specific tree styles only */
+
+/* Import base styles (includes variables) */
+@import url("base.qss");
+
+/* Tree-specific styles */
+QTreeWidget {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: none;
+    font-size: var(--padding-large);
+}
+
+QTreeWidget::item {
+    padding: var(--radius-small) var(--padding-medium);
+    min-height: var(--padding-large);
+}
+
+/* Tree-specific hover and selection styles */
+QTreeWidget::item:hover {
+    background-color: var(--accent-primary);
+}
+
+QTreeWidget::item:selected, QTreeWidget::item:selected:active {
+    background-color: var(--accent-primary);
+    color: var(--text-primary);
+}
+
+/* Tree-specific header styling */
+QHeaderView::section {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    padding: var(--padding-small);
+    border: 1px solid var(--border-primary);
+    font-weight: bold;
+}
+
+QHeaderView::section:hover {
+    background-color: var(--accent-primary);
+}
+
+QHeaderView::section:checked {
+    background-color: var(--accent-primary);
+}
+
+/* Tree-specific branch styling */
+QTreeView::branch {
+    background: transparent;
+}

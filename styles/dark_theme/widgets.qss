@@ -1,0 +1,299 @@
+/* General widget styling for dark theme - modern dark */
+@import url("variables.qss");
+
+/* Checkbox styling with dark theme SVG icons - no solid colors */
+QCheckBox {
+    spacing: var(--padding-medium);
+    color: var(--text-primary);
+    background-color: transparent;
+}
+
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    background-color: transparent;
+    border: none;
+}
+
+QCheckBox::indicator:unchecked {
+    image: url("styles/dark_theme/icons/checkbox-unchecked.svg");
+}
+
+QCheckBox::indicator:checked {
+    image: url("styles/dark_theme/icons/checkbox-checked.svg");
+}
+
+QCheckBox::indicator:indeterminate {
+    image: url("styles/dark_theme/icons/checkbox-indeterminate.svg");
+}
+
+QCheckBox::indicator:unchecked:hover,
+QCheckBox::indicator:checked:hover,
+QCheckBox::indicator:indeterminate:hover {
+    opacity: 0.8;
+}
+
+QCheckBox::indicator:unchecked:pressed,
+QCheckBox::indicator:checked:pressed,
+QCheckBox::indicator:indeterminate:pressed {
+    opacity: 0.6;
+}
+
+QCheckBox::indicator:unchecked:disabled {
+    image: url("styles/dark_theme/icons/checkbox-unchecked.svg");
+    opacity: 0.4;
+}
+
+QCheckBox::indicator:checked:disabled {
+    image: url("styles/dark_theme/icons/checkbox-checked.svg");
+    opacity: 0.4;
+}
+
+QCheckBox::indicator:indeterminate:disabled {
+    image: url("styles/dark_theme/icons/checkbox-indeterminate.svg");
+    opacity: 0.4;
+}
+
+/* Frame styling */
+QFrame {
+    background-color: transparent;
+    color: var(--text-primary);
+}
+
+QFrame[frameShape="1"] { /* Box */
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-small);
+}
+
+QFrame[frameShape="2"] { /* Panel */
+    border: 1px solid var(--border-primary);
+    background-color: var(--bg-secondary);
+}
+
+QFrame[frameShape="3"] { /* WinPanel */
+    border: 1px solid var(--border-primary);
+    background-color: var(--bg-secondary);
+}
+
+QFrame[frameShape="4"] { /* HLine */
+    border: none;
+    border-top: 1px solid var(--border-primary);
+}
+
+QFrame[frameShape="5"] { /* VLine */
+    border: none;
+    border-left: 1px solid var(--border-primary);
+}
+
+/* Stack widget styling */
+QStackedWidget {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* Tab widget styling */
+QTabWidget::pane {
+    border: 1px solid var(--border-primary);
+    background-color: var(--bg-secondary);
+}
+
+QTabWidget::tab-bar {
+    background-color: var(--bg-secondary);
+}
+
+/* Common dialog styling - consolidated for all dialog types */
+QWizard,
+QColorDialog,
+QFontDialog,
+QInputDialog,
+QPrintDialog,
+QFileDialog,
+QCalendarWidget {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* Common button styling for all dialogs */
+QWizard QPushButton,
+QColorDialog QPushButton,
+QFontDialog QPushButton,
+QInputDialog QPushButton,
+QPrintDialog QPushButton,
+QFileDialog QPushButton,
+QCalendarWidget QToolButton,
+QCalendarWidget QSpinBox::up-button,
+QCalendarWidget QSpinBox::down-button {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+    padding: var(--padding-small) var(--padding-medium);
+    border-radius: var(--radius-small);
+}
+
+QWizard QPushButton:hover,
+QColorDialog QPushButton:hover,
+QFontDialog QPushButton:hover,
+QInputDialog QPushButton:hover,
+QPrintDialog QPushButton:hover,
+QFileDialog QPushButton:hover,
+QCalendarWidget QToolButton:hover,
+QCalendarWidget QSpinBox::up-button:hover,
+QCalendarWidget QSpinBox::down-button:hover {
+    background-color: var(--accent-primary);
+}
+
+QWizard QPushButton:pressed,
+QColorDialog QPushButton:pressed,
+QFontDialog QPushButton:pressed,
+QInputDialog QPushButton:pressed,
+QPrintDialog QPushButton:pressed,
+QFileDialog QPushButton:pressed,
+QCalendarWidget QToolButton:pressed,
+QCalendarWidget QSpinBox::up-button:pressed,
+QCalendarWidget QSpinBox::down-button:pressed {
+    background-color: var(--accent-pressed);
+}
+
+/* Calendar specific styling */
+QCalendarWidget QMenu {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+}
+
+QCalendarWidget QSpinBox {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+    padding: var(--padding-small);
+}
+
+QCalendarWidget QTableView {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+}
+
+QCalendarWidget QTableView::item {
+    padding: var(--padding-small);
+}
+
+QCalendarWidget QTableView::item:selected {
+    background-color: var(--selected-bg);
+    color: #ffffff;
+}
+
+QCalendarWidget QTableView::item:hover {
+    background-color: var(--hover-bg);
+}
+
+/* Tree view specific styling for expand/collapse arrows */
+QTreeView {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+    alternate-background-color: var(--bg-primary);
+}
+
+QTreeView::item {
+    padding: var(--padding-small);
+}
+
+QTreeView::item:selected {
+    background-color: var(--selected-bg);
+    color: #ffffff;
+}
+
+QTreeView::item:hover {
+    background-color: var(--hover-bg);
+}
+
+/* Make expand/collapse indicators visible */
+QTreeView::branch {
+    background-color: transparent;
+}
+
+/* Style the expand/collapse indicators */
+QTreeView::branch:closed:has-children,
+QTreeView::branch:open:has-children {
+    border-image: url("");
+    width: 16px;
+    height: 16px;
+}
+
+QTreeView::branch {
+    border: none;
+    background: transparent;
+}
+
+QTreeView::branch:has-children:closed {
+    border: none;
+}
+
+/* Modern Scrollbar Styling */
+QScrollBar:horizontal {
+    background-color: transparent;
+    height: 12px;
+    margin: 0px;
+    border-radius: var(--radius-medium);
+}
+
+QScrollBar:vertical {
+    background-color: transparent;
+    width: 12px;
+    margin: 0px;
+    border-radius: var(--radius-medium);
+}
+
+QScrollBar::handle:horizontal {
+    background-color: rgba(255, 255, 255, 0.15);
+    min-width: 20px;
+    border-radius: var(--radius-medium);
+    margin: 2px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: rgba(255, 255, 255, 0.15);
+    min-height: 20px;
+    border-radius: var(--radius-medium);
+    margin: 2px;
+}
+
+QScrollBar::handle:horizontal:hover,
+QScrollBar::handle:vertical:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+QScrollBar::handle:horizontal:pressed,
+QScrollBar::handle:vertical:pressed {
+    background-color: rgba(255, 255, 255, 0.35);
+}
+
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal,
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    background-color: transparent;
+    border: none;
+    width: 0px;
+    height: 0px;
+}
+
+QScrollBar::add-page:horizontal,
+QScrollBar::sub-page:horizontal,
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background-color: transparent;
+}
+
+QScrollBar::groove:horizontal {
+    background-color: transparent;
+    height: 12px;
+    border-radius: var(--radius-medium);
+}
+
+QScrollBar::groove:vertical {
+    background-color: transparent;
+    width: 12px;
+    border-radius: var(--radius-medium);
+}

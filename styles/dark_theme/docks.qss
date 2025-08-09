@@ -1,0 +1,32 @@
+/* Dock widget styling for dark theme - specific dock styles only */
+
+/* Import base styles (includes variables) */
+@import url("base.qss");
+
+/* Dock widget contents */
+QDockWidget > QWidget {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+    border-top: none;
+}
+
+/* Dock-specific tab bar styling */
+QMainWindow > QTabBar {
+    background: var(--bg-primary);
+}
+
+QMainWindow > QTabBar::tab {
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    border: 1px solid var(--bg-primary);
+    border-top: 1px solid var(--border-primary);
+    border-bottom: none;
+    padding: var(--padding-small) var(--padding-small);
+    font-weight: bold;
+}
+
+QMainWindow > QTabBar::tab:selected {
+    background: var(--accent-primary);
+    color: var(--text-primary);
+}

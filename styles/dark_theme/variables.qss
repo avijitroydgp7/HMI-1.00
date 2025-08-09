@@ -1,0 +1,43 @@
+/* Dark Theme Variables - Central color definitions */
+:root {
+    /* Primary Colors */
+    --bg-primary: #1e1e1e;
+    --bg-secondary: #292929;
+    --bg-tertiary: #2d2d2d;
+    
+    /* Popup/Dialog specific colors - more distinct from application background */
+    --popup-bg: #202020;
+    --popup-title-bg: #3a4a6a;
+    --popup-border: #4a4a4a;
+    
+    /* Text Colors */
+    --text-primary: #e0e0e0;
+    --text-secondary: #c0c0c0;
+    --text-disabled: #656565;
+    
+    /* Accent Colors */
+    --accent-primary: #528bff;
+    --accent-hover: #3c5e7d;
+    --accent-pressed: #3c5e7d;
+    --accent-info: #17a2b8;
+    
+    /* Border Colors */
+    --border-primary: #3a3a3a;
+    --border-hover: #528bff;
+    --border-focus: #528bff;
+    
+    /* Interactive States */
+    --hover-bg: #3c5e7d;
+    --selected-bg: #528bff;
+    --disabled-bg: #121212;
+    
+    /* Spacing */
+    --padding-small: 4px;
+    --padding-medium: 8px;
+    --padding-large: 16px;
+    
+    /* Border Radius */
+    --radius-small: 2px;
+    --radius-medium: 4px;
+    --radius-large: 8px;
+}

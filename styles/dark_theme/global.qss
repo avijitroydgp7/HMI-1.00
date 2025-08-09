@@ -1,0 +1,90 @@
+/* Global fixes for dark theme - specific global styles only */
+
+/* Import base styles (includes variables) */
+@import url("base.qss");
+
+/* Global-specific fixes */
+QSplitter::handle {
+    background-color: var(--border-primary);
+}
+
+QSplitter::handle:horizontal {
+    width: var(--radius-small);
+}
+
+QSplitter::handle:vertical {
+    height: var(--radius-small);
+}
+
+QComboBox::drop-down {
+    background-color: var(--bg-primary);
+    border-left: 1px solid var(--border-primary);
+    width: calc(var(--padding-large) * 2);
+}
+
+QComboBox::down-arrow {
+    image: url("styles/dark_theme/icons/arrow-down.svg");
+    width: var(--padding-medium);
+    height: var(--padding-medium);
+}
+
+QSpinBox::up-button, QSpinBox::down-button {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    width: var(--padding-large);
+}
+
+QSpinBox::up-arrow {
+    image: url("styles/dark_theme/icons/arrow-up.svg");
+    width: var(--padding-medium);
+    height: var(--padding-medium);
+}
+
+QSpinBox::down-arrow {
+    image: url("styles/dark_theme/icons/arrow-down.svg");
+    width: var(--padding-medium);
+    height: var(--padding-medium);
+}
+
+QProgressBar::chunk {
+    background-color: var(--accent-hover);
+    border-radius: var(--radius-small);
+}
+
+QSlider::groove:horizontal {
+    background-color: var(--border-primary);
+}
+
+QSlider::handle:horizontal {
+    background-color: var(--accent-hover);
+    width: var(--padding-medium);
+    height: var(--padding-medium);
+    border-radius: var(--radius-small);
+    margin: calc(var(--radius-small) * -2) 0;
+}
+
+QSlider::groove:vertical {
+    background-color: var(--border-primary);
+}
+
+QSlider::handle:vertical {
+    background-color: var(--accent-hover);
+    width: var(--padding-medium);
+    height: var(--padding-medium);
+    border-radius: var(--radius-small);
+    margin: 0 calc(var(--radius-small) * -2);
+}
+
+QHeaderView::section:hover {
+    background-color: var(--accent-hover);
+}
+
+QHeaderView::section:pressed {
+    background-color: var(--accent-hover);
+}
+
+
+/* Ensure dialog containers have rounded corners */
+QDialog > QWidget{
+    border-radius: 12px;
+}
