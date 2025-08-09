@@ -2,7 +2,10 @@
 # A simple service for persisting application settings.
 
 import json
+import logging
 import os
+
+logger = logging.getLogger(__name__)
 
 class SettingsService:
     """
@@ -27,6 +30,7 @@ class SettingsService:
                     return json.load(f)
         except (IOError, json.JSONDecodeError) as e:
             print(f"Could not load settings: {e}")
+            logger.warning(f"Could not load settings: {e}")
         return {}
 
     def save(self):
@@ -36,6 +40,7 @@ class SettingsService:
                 json.dump(self.settings, f, indent=4)
         except IOError as e:
             print(f"Could not save settings: {e}")
+            logger.error(f"Could not save settings: {e}")
 
     def get_value(self, key, default=None):
         """
