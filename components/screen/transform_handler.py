@@ -258,8 +258,7 @@ class TransformHandler:
                 center
             )
             self.parent_item.setRotation(
-                self.parent_item.rotation()
-                + angle_delta
+                self.parent_item.rotation() + angle_delta
             )
             # Update start_pos so we can rotate smoothly on the next move
             self.start_pos = QPointF(pos)
