@@ -13,7 +13,7 @@ from utils.icon_manager import IconManager
 
 
 class ScreenDesignDialog(CustomDialog):
-    """Dialog for configuring screen design properties with custom title bar."""
+    """Dialog for configuring screen design properties."""
     
     design_saved = pyqtSignal(dict)  # Emitted when design is saved
     
@@ -32,7 +32,7 @@ class ScreenDesignDialog(CustomDialog):
     def _setup_ui(self):
         """Set up the user interface."""
         layout = self.get_content_layout()
-        # No content added, empty popup with custom title bar
+        # No content added; placeholder dialog
         
     def _load_current_design(self):
         """Load the current design configuration."""

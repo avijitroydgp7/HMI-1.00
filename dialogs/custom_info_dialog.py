@@ -5,10 +5,7 @@ from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 from .base_dialog import CustomDialog
 
 class CustomInfoDialog(CustomDialog):
-    """
-    A custom dialog for showing information, warnings, or errors,
-    with a single "OK" button. It inherits the custom title bar.
-    """
+    """A dialog for showing information, warnings, or errors with a single "OK" button."""
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setMinimumWidth(400)
@@ -33,22 +30,3 @@ class CustomInfoDialog(CustomDialog):
         
         main_content_layout.addLayout(button_layout)
         content_layout.addLayout(main_content_layout)
-
-
-    def keyPressEvent(self, event):
-        if event.key() == Qt.Key.Key_Escape:
-            self.reject()
-        else:
-            super().keyPressEvent(event)
-
-    def setText(self, text):
-        """Sets the main text of the dialog."""
-        self.info_label.setText(text)
-
-    @staticmethod
-    def show_info(parent, title, text):
-        """A static method to quickly show an informational dialog."""
-        dialog = CustomInfoDialog(parent)
-        dialog.setWindowTitle(title)
-        dialog.setText(text)
-        dialog.exec()

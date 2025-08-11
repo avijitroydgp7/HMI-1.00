@@ -5,10 +5,7 @@ from PyQt6.QtWidgets import QPushButton
 from ..base_dialog import CustomDialog
 
 class SelectActionTypeDialog(CustomDialog):
-    """
-    A dialog that prompts the user to select what kind of action
-    they want to add to a button, with a custom title bar.
-    """
+    """Dialog that prompts the user to select what kind of action they want to add to a button."""
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Select Action Type")

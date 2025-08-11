@@ -5,10 +5,7 @@ from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QMess
 from .base_dialog import CustomDialog
 
 class CustomQuestionDialog(CustomDialog):
-    """
-    A custom dialog for asking Yes/No questions, inheriting the
-    custom title bar and application theme.
-    """
+    """A dialog for asking Yes/No questions."""
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setMinimumWidth(400)

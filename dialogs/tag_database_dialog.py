@@ -7,10 +7,7 @@ from services.tag_data_service import tag_data_service
 from .base_dialog import CustomDialog
 
 class NewTagDatabaseDialog(CustomDialog):
-    """
-    A simple dialog to get a name for a new tag database or to rename an
-    existing one, with a custom title bar.
-    """
+    """A dialog to get a name for a new tag database or to rename an existing one."""
     def __init__(self, parent=None, edit_name=None):
         super().__init__(parent)
         self.edit_name = edit_name

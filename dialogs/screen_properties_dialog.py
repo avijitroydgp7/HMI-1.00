@@ -11,7 +11,7 @@ from services.screen_data_service import screen_service
 from .base_dialog import CustomDialog
 
 class ScreenPropertiesDialog(CustomDialog):
-    """Dialog for creating and editing screen properties with a custom title bar."""
+    """Dialog for creating and editing screen properties."""
     def __init__(self, screen_type, parent=None, edit_data=None):
         super().__init__(parent)
         self.screen_type = screen_type

@@ -14,10 +14,7 @@ from ..base_dialog import CustomDialog
 from ..custom_widgets import TagLineEdit, TagSelector, CollapsibleBox
 
 class BitActionDialog(CustomDialog):
-    """
-    A dialog to configure a Bit Action for a button, with a custom title bar
-    and an advanced trigger section.
-    """
+    """A dialog to configure a Bit Action for a button with an advanced trigger section."""
     def __init__(self, parent=None, action_data: Optional[Dict] = None):
         super().__init__(parent)
         self.setWindowTitle("Bit Action Configuration")

@@ -7,9 +7,7 @@ from typing import Dict, Any
 from .base_dialog import CustomDialog
 
 class ProjectInfoDialog(CustomDialog):
-    """
-    A dialog to display and edit project-wide information, with a custom title bar.
-    """
+    """A dialog to display and edit project-wide information."""
     def __init__(self, project_info: Dict[str, Any], parent=None):
         super().__init__(parent)
         self.setWindowTitle("Project Information")

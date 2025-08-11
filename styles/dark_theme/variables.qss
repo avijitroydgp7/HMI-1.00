@@ -7,7 +7,6 @@
     
     /* Popup/Dialog specific colors - more distinct from application background */
     --popup-bg: #202020;
-    --popup-title-bg: #3a4a6a;
     --popup-border: #4a4a4a;
     
     /* Text Colors */
