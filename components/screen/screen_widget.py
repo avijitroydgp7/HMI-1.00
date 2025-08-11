@@ -337,6 +337,11 @@ class ScreenCanvas(QGraphicsView):
             )
         )
         self.selection_manager.item_moved.connect(lambda item_id, old_pos, new_pos: self.selection_dragged.emit({'item_id': item_id, 'old_pos': old_pos, 'new_pos': new_pos}))
+
+        # State for marquee (drag) selection
+        self._marquee_origin = QPointF()
+        self._marquee_rect_item: QGraphicsRectItem | None = None
+        self._marquee_active = False
         self._configure_view()
         
         # Initialize zoom manager
@@ -534,12 +539,35 @@ class ScreenCanvas(QGraphicsView):
         
         if self.active_tool == constants.TOOL_SELECT:
             item = self.itemAt(event.pos())
-            if item:
-                self.selection_manager.handle_mouse_press(event, item)
-            
-                if item.isSelected():
-                    self.selection_manager.start_move(scene_pos)
-            
+            self.selection_manager.handle_mouse_press(event, item)
+
+            if item and item.isSelected():
+                self.selection_manager.start_move(scene_pos)
+            else:
+                if (
+                    event.button() == Qt.MouseButton.LeftButton
+                    and not item
+                ):
+                    # Begin marquee selection
+                    self._marquee_origin = scene_pos
+                    self._marquee_active = True
+                    self._marquee_rect_item = QGraphicsRectItem()
+                    self._marquee_rect_item.setRect(QRectF(scene_pos, scene_pos))
+                    pen = QPen(
+                        self.transform_handler.HANDLE_COLOR,
+                        1,
+                        Qt.PenStyle.DashLine,
+                    )
+                    self._marquee_rect_item.setPen(pen)
+                    self._marquee_rect_item.setBrush(Qt.BrushStyle.NoBrush)
+                    self._marquee_rect_item.setFlag(
+                        QGraphicsItem.GraphicsItemFlag.ItemIsSelectable,
+                        False,
+                    )
+                    self._marquee_rect_item.setZValue(10_000)
+                    self._scene.addItem(self._marquee_rect_item)
+                    event.accept()
+
             return
 
         if self.placement_mode:
@@ -562,10 +590,17 @@ class ScreenCanvas(QGraphicsView):
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         """Handle mouse move events."""
         scene_pos = self.mapToScene(event.pos())
-        
-        if self.active_tool == constants.TOOL_SELECT and self.selection_manager._is_moving:
-            self.selection_manager.update_move(scene_pos)
-            return
+
+        if self.active_tool == constants.TOOL_SELECT:
+            if self._marquee_active:
+                rect = QRectF(self._marquee_origin, scene_pos).normalized()
+                if self._marquee_rect_item:
+                    self._marquee_rect_item.setRect(rect)
+                event.accept()
+                return
+            if self.selection_manager._is_moving:
+                self.selection_manager.update_move(scene_pos)
+                return
 
         if self.placement_mode and self.placement_tool == constants.TOOL_BUTTON:
             self._update_placement_preview(scene_pos)
@@ -668,11 +703,37 @@ class ScreenCanvas(QGraphicsView):
 
         """Handle mouse release events."""
         scene_pos = self.mapToScene(event.pos())
-        
+        if self.active_tool == constants.TOOL_SELECT:
+            if self._marquee_active:
+                # Finalize marquee selection
+                selection_rect = self._marquee_rect_item.rect().normalized()
+                self._scene.removeItem(self._marquee_rect_item)
+                self._marquee_rect_item = None
+                self._marquee_active = False
 
-        
-        if self.active_tool == constants.TOOL_SELECT and self.selection_manager._is_moving:
-            self.selection_manager.finish_move(scene_pos)
+                items_to_process = []
+                for item in self._scene.items(selection_rect):
+                    if item is None:
+                        continue
+                    if item.flags() & QGraphicsItem.GraphicsItemFlag.ItemIsSelectable:
+                        item_rect = item.sceneBoundingRect()
+                        if selection_rect.contains(item_rect):
+                            items_to_process.append(item)
+
+                if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
+                    for it in items_to_process:
+                        self.selection_manager.toggle_selection(it)
+                else:
+                    self.selection_manager.clear_selection()
+                    for it in items_to_process:
+                        self.selection_manager.select_item(it, True)
+
+                event.accept()
+                return
+
+            if self.selection_manager._is_moving:
+                self.selection_manager.finish_move(scene_pos)
+                event.accept()
         super().mouseReleaseEvent(event)
 
     

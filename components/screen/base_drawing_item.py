@@ -94,7 +94,9 @@ class BaseDrawingItem(QGraphicsItem):
     def mouseMoveEvent(self, event: QGraphicsSceneMouseEvent) -> None:
         """Handle move or transform updates."""
         if self._is_transforming and self._active_handle is not None:
-            self.transform_handler.update_transform(event.pos())
+            self.transform_handler.update_transform(
+                event.pos(), event.modifiers()
+            )
             event.accept()
             return
 

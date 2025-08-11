@@ -41,6 +41,7 @@ class TransformHandler:
         self.start_rect = None
         self.start_pos = None
         self.start_transform = None
+        self.start_aspect_ratio = None
 
     def update_handles(self):
         """Recompute handle rectangles if necessary."""
@@ -207,8 +208,17 @@ class TransformHandler:
         self.start_transform = (
             self.parent_item.transform()
         )
-
-    def update_transform(self, pos: QPointF):
+        if self.start_rect.height() != 0:
+            self.start_aspect_ratio = (
+                self.start_rect.width() / self.start_rect.height()
+            )
+        else:
+            self.start_aspect_ratio = None
+    def update_transform(
+        self,
+        pos: QPointF,
+        modifiers: Qt.KeyboardModifier = Qt.KeyboardModifier.NoModifier,
+    ):
         """Apply resizing or rotation based on mouse movement."""
         if self.active_handle is None:
             return False
@@ -254,16 +264,69 @@ class TransformHandler:
             curr_angle = self._vector_angle(curr_vec)
             angle_delta = curr_angle - start_angle
 
+            new_angle = self.parent_item.rotation() + angle_delta
+            if modifiers & Qt.KeyboardModifier.ShiftModifier:
+                new_angle = round(new_angle / 15.0) * 15.0
+
             self.parent_item.setTransformOriginPoint(
                 center
             )
-            self.parent_item.setRotation(
-                self.parent_item.rotation()
-                + angle_delta
-            )
+            self.parent_item.setRotation(new_angle)
             # Update start_pos so we can rotate smoothly on the next move
             self.start_pos = QPointF(pos)
             return True
+
+        # Constrain aspect ratio when shift is held
+        if (
+            modifiers & Qt.KeyboardModifier.ShiftModifier
+            and self.start_aspect_ratio
+        ):
+            ratio = self.start_aspect_ratio
+            if self.active_handle in (
+                self.TOP_LEFT,
+                self.TOP_RIGHT,
+                self.BOTTOM_LEFT,
+                self.BOTTOM_RIGHT,
+            ):
+                width = rect.width()
+                height = rect.height()
+                if abs(dx) > abs(dy):
+                    height = width / ratio
+                    if self.active_handle in (
+                        self.TOP_LEFT,
+                        self.TOP_RIGHT,
+                    ):
+                        rect.setTop(rect.bottom() - height)
+                    else:
+                        rect.setBottom(rect.top() + height)
+                else:
+                    width = height * ratio
+                    if self.active_handle in (
+                        self.TOP_LEFT,
+                        self.BOTTOM_LEFT,
+                    ):
+                        rect.setLeft(rect.right() - width)
+                    else:
+                        rect.setRight(rect.left() + width)
+            elif self.active_handle in (
+                self.LEFT,
+                self.RIGHT,
+            ):
+                width = rect.width()
+                height = width / ratio
+                center_y = rect.center().y()
+                rect.setTop(center_y - height / 2)
+                rect.setBottom(center_y + height / 2)
+            elif self.active_handle in (
+                self.TOP,
+                self.BOTTOM,
+            ):
+                height = rect.height()
+                width = height * ratio
+                center_x = rect.center().x()
+                rect.setLeft(center_x - width / 2)
+                rect.setRight(center_x + width / 2)
+
 
         # Enforce a minimum size
         min_size = 8.0
