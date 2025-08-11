@@ -1,5 +1,5 @@
 from PyQt6.QtCore import Qt, QRectF, QPointF
-from PyQt6.QtGui import QPainter, QPen, QColor, QBrush, QGuiApplication
+from PyQt6.QtGui import QPainter, QPen, QColor, QBrush
 from PyQt6.QtWidgets import QGraphicsItem
 import math
 
@@ -41,9 +41,6 @@ class TransformHandler:
         self.start_rect = None
         self.start_pos = None
         self.start_transform = None
-
-        # preview state for dashed transform line
-        self._preview_active = False
 
     def update_handles(self):
         """Recompute handle rectangles if necessary."""
@@ -128,8 +125,13 @@ class TransformHandler:
         rect = self.parent_item.boundingRect()
 
         # Draw dashed selection outline
-        painter.setPen(QPen(self.HANDLE_COLOR, 1,
-                Qt.PenStyle.DashLine if self._preview_active else Qt.PenStyle.SolidLine))
+        painter.setPen(
+            QPen(
+                self.HANDLE_COLOR,
+                1,
+                Qt.PenStyle.DashLine,
+            )
+        )
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawRect(rect)
 
@@ -239,31 +241,6 @@ class TransformHandler:
             rect.setBottomLeft(
                 rect.bottomLeft() + QPointF(dx, dy)
             )
-
-        # Maintain aspect ratio if Shift is pressed
-        if bool(QGuiApplication.keyboardModifiers() & Qt.KeyboardModifier.ShiftModifier) and self.active_handle != self.ROTATION:
-            ow = max(1e-6, self.start_rect.width())
-            oh = max(1e-6, self.start_rect.height())
-            aspect = ow / oh
-            r = rect.normalized()
-            w, h = r.width(), r.height()
-            if w / h > aspect:
-                w = h * aspect
-            else:
-                h = w / aspect
-            # Anchor to the opposite corner from the dragged handle
-            if self.active_handle in (self.TOP_LEFT, self.TOP, self.LEFT):
-                anchor = QPointF(self.start_rect.right(), self.start_rect.bottom())
-                rect = QRectF(anchor.x() - w, anchor.y() - h, w, h)
-            elif self.active_handle in (self.TOP_RIGHT, self.TOP, self.RIGHT):
-                anchor = QPointF(self.start_rect.left(), self.start_rect.bottom())
-                rect = QRectF(anchor.x(), anchor.y() - h, w, h)
-            elif self.active_handle in (self.BOTTOM_LEFT, self.BOTTOM, self.LEFT):
-                anchor = QPointF(self.start_rect.right(), self.start_rect.top())
-                rect = QRectF(anchor.x() - w, anchor.y(), w, h)
-            else:  # BOTTOM_RIGHT and others
-                anchor = QPointF(self.start_rect.left(), self.start_rect.top())
-                rect = QRectF(anchor.x(), anchor.y(), w, h)
         elif self.active_handle == self.LEFT:
             rect.setLeft(rect.left() + dx)
         elif self.active_handle == self.ROTATION:
@@ -347,7 +324,6 @@ class TransformHandler:
 
         # Invalidate cached handles and request repaint
         self.invalidate_cache()
-        self._preview_active = False
         self.parent_item.update()
         return True
 
@@ -357,11 +333,7 @@ class TransformHandler:
         self.start_rect = None
         self.start_pos = None
         self.start_transform = None
-
-        # preview state for dashed transform line
-        self._preview_active = False
         self.invalidate_cache()
-        self._preview_active = False
 
     def _vector_angle(self, vector: QPointF):
         """Compute the angle (in degrees) of a 2D vector."""
