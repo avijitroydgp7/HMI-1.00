@@ -1,97 +1,41 @@
 # dialogs/base_dialog.py
-# A custom, stylable base dialog with a movable title bar.
-
-from PyQt6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QWidget, QSizePolicy
-)
-from PyQt6.QtCore import Qt, QPoint
-from utils.icon_manager import IconManager
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QWidget
+from PyQt6.QtCore import Qt
 
 class CustomDialog(QDialog):
     """
-    A base class for all custom dialogs in the application.
-    It provides a consistent, stylable, and movable title bar.
+    Native (framed) dialog base preserving original API:
+    - get_content_layout()
+    - Accepts parent, optional title, modal flag
     """
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, title: str | None = None, modal: bool = True):
         super().__init__(parent)
-        self.drag_pos = QPoint()
+        if title:
+            self.setWindowTitle(title)
+        self.setModal(modal)
 
-        # Make the dialog frameless and transparent to draw our own frame
-        self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog)
-        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        # Remove styling from the dialog itself, apply only to container
-        # self.setObjectName("CustomDialogBase")
+        # Native title bar + working close button; DO NOT auto-delete on close
+        self.setWindowFlags(
+            Qt.WindowType.Dialog
+            | Qt.WindowType.WindowTitleHint
+            | Qt.WindowType.WindowSystemMenuHint
+            | Qt.WindowType.WindowCloseButtonHint
+        )
+        # Important: Do NOT set WA_DeleteOnClose here, so callers can safely read widgets after exec()
 
-        # Main container that holds the border and background
-        self.container = QWidget(self)
-        self.container.setObjectName("DialogContainer")
-        
-        # Main layout for the entire dialog window
-        main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.setSpacing(0)
-        main_layout.addWidget(self.container)
+        # Content area
+        self._main_layout = QVBoxLayout(self)
+        self._main_layout.setContentsMargins(12, 12, 12, 12)
+        self._main_layout.setSpacing(8)
 
-        # Internal layout for the container (title bar + content)
-        container_layout = QVBoxLayout(self.container)
-        container_layout.setContentsMargins(1, 1, 1, 1)
-        container_layout.setSpacing(0)
+        self.content_widget = QWidget(self)
+        self._main_layout.addWidget(self.content_widget)
 
-        # --- Custom Title Bar ---
-        self.title_bar = QWidget()
-        self.title_bar.setObjectName("TitleBar")
-        self.title_bar.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        title_bar_layout = QHBoxLayout(self.title_bar)
-        title_bar_layout.setContentsMargins(10, 5, 5, 5)
-        
-        self.title_label = QLabel("Dialog")
-        self.title_label.setObjectName("TitleLabel")
-        
-        self.close_button = QPushButton(IconManager.create_icon('fa5s.times'), "")
-        self.close_button.setObjectName("CloseButton")
-        self.close_button.clicked.connect(self.reject) # Default close action is reject/cancel
-        
-        title_bar_layout.addWidget(self.title_label)
-        title_bar_layout.addStretch()
-        title_bar_layout.addWidget(self.close_button)
-        container_layout.addWidget(self.title_bar)
-
-        # --- Content Area ---
-        # Subclasses will add their widgets to this content_widget
-        self.content_widget = QWidget()
-        container_layout.addWidget(self.content_widget)
+        self._content_layout = None
 
     def get_content_layout(self):
-        """
-        Returns the layout of the content area, so subclasses can add widgets.
-        If the layout doesn't exist, it creates one.
-        """
-        if not self.content_widget.layout():
-            # Use a QVBoxLayout by default for the content area
-            content_layout = QVBoxLayout(self.content_widget)
-            content_layout.setContentsMargins(15, 15, 15, 15)
-            content_layout.setSpacing(10)
-        return self.content_widget.layout()
-
-    def setWindowTitle(self, title):
-        """Overrides the default setWindowTitle to update our custom label."""
-        self.title_label.setText(title)
-        super().setWindowTitle(title)
-
-    # --- Drag Logic ---
-    def mousePressEvent(self, event):
-        # Only start a drag if the click is on the title bar
-        if self.title_bar.underMouse():
-            self.drag_pos = event.globalPosition().toPoint()
-            event.accept()
-
-    def mouseMoveEvent(self, event):
-        # Check if a drag has been initiated
-        if not self.drag_pos.isNull():
-            self.move(self.pos() + event.globalPosition().toPoint() - self.drag_pos)
-            self.drag_pos = event.globalPosition().toPoint()
-            event.accept()
-
-    def mouseReleaseEvent(self, event):
-        self.drag_pos = QPoint()
-        event.accept()
+        if self._content_layout is None:
+            self._content_layout = QVBoxLayout(self.content_widget)
+            self._content_layout.setContentsMargins(0, 0, 0, 0)
+            self._content_layout.setSpacing(8)
+        return self._content_layout
