@@ -5,9 +5,14 @@ import math
 
 
 class TransformHandler:
-    """
-    Provides resize and rotate handles around an item and applies
-    size/rotation changes based on mouse interaction.
+    """Modern transform handle implementation.
+
+    This handler draws a selection outline with resize and rotation
+    handles for a :class:`QGraphicsItem`.  The drawing uses *cosmetic*
+    pens so handle and line thickness remain constant regardless of the
+    current view zoom level.  Handle geometry is recalculated based on
+    the view scale to keep their on‑screen size consistent while the
+    selected item's bounding area naturally grows or shrinks with zoom.
     """
 
     # Enumeration of handle positions
@@ -28,13 +33,19 @@ class TransformHandler:
 
     def __init__(self, parent_item: QGraphicsItem):
         self.parent_item = parent_item
-        self.handle_size = 8.0
-        self.handle_space = 1.0
-        self.rotation_offset = 20.0
+
+        # Base (screen space) metrics for handles.  The public properties
+        # ``handle_size``, ``handle_space`` and ``rotation_offset`` scale
+        # these values against the current view zoom so the handles remain
+        # the same visual size.
+        self._handle_size = 8.0
+        self._handle_space = 1.0
+        self._rotation_offset = 20.0
 
         self.handles = {}
         self._handles_cache = None
         self._last_rect = None
+        self._last_scale = None
 
         # State for ongoing transform
         self.active_handle = None
@@ -43,19 +54,49 @@ class TransformHandler:
         self.start_transform = None
         self.start_aspect_ratio = None
 
+    # ------------------------------------------------------------------
+    # Geometry helpers
+    # ------------------------------------------------------------------
+    def _current_scale(self) -> float:
+        """Return the current view scale factor (defaults to ``1.0``)."""
+        scene = self.parent_item.scene()
+        if scene and scene.views():
+            view = scene.views()[0]
+            return view.transform().m11() or 1.0
+        return 1.0
+
+    @property
+    def handle_size(self) -> float:
+        """Handle size adjusted for the current zoom level."""
+        return self._handle_size / self._current_scale()
+
+    @property
+    def handle_space(self) -> float:
+        """Spacing around handles adjusted for zoom."""
+        return self._handle_space / self._current_scale()
+
+    @property
+    def rotation_offset(self) -> float:
+        """Vertical distance of the rotation handle adjusted for zoom."""
+        return self._rotation_offset / self._current_scale()
+
     def update_handles(self):
         """Recompute handle rectangles if necessary."""
         rect = self.parent_item.contentRect()
+        scale = self._current_scale()
         if (
             self._handles_cache is not None
             and self._last_rect == rect
+            and self._last_scale == scale
         ):
             self.handles = self._handles_cache
             return
 
         self._last_rect = QRectF(rect)
-        hs = self.handle_size
-        sp = self.handle_space
+        self._last_scale = scale
+        hs = self._handle_size / scale
+        sp = self._handle_space / scale
+        ro = self._rotation_offset / scale
 
         self.handles = {
             self.TOP_LEFT: QRectF(
@@ -108,7 +149,7 @@ class TransformHandler:
             ),
             self.ROTATION: QRectF(
                 rect.center().x() - hs / 2.0,
-                rect.top() - self.rotation_offset - hs,
+                rect.top() - ro - hs,
                 hs,
                 hs,
             ),
@@ -126,47 +167,30 @@ class TransformHandler:
         rect = self.parent_item.contentRect()
 
         # Draw dashed selection outline
-        painter.setPen(
-            QPen(
-                self.HANDLE_COLOR,
-                1,
-                Qt.PenStyle.DashLine,
-            )
-        )
+        pen = QPen(self.HANDLE_COLOR, 1, Qt.PenStyle.DashLine)
+        pen.setCosmetic(True)
+        painter.setPen(pen)
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawRect(rect)
 
         # Draw the connector line for rotation
-        painter.setPen(
-            QPen(
-                self.ROTATION_HANDLE_COLOR,
-                1,
-                Qt.PenStyle.SolidLine,
-            )
-        )
+        pen = QPen(self.ROTATION_HANDLE_COLOR, 1)
+        pen.setCosmetic(True)
+        painter.setPen(pen)
         top_center = self.handles[self.TOP].center()
         rot_center = self.handles[self.ROTATION].center()
         painter.drawLine(top_center, rot_center)
 
-        # Draw each handle
+        # Draw each handle as a circle with cosmetic border
         for hid, hrect in self.handles.items():
             if hid == self.ROTATION:
-                painter.setBrush(
-                    QBrush(self.ROTATION_HANDLE_COLOR)
-                )
-                painter.setPen(
-                    QPen(
-                        self.HANDLE_BORDER_COLOR, 1
-                    )
-                )
+                painter.setBrush(QBrush(self.ROTATION_HANDLE_COLOR))
             else:
                 painter.setBrush(QBrush(self.HANDLE_COLOR))
-                painter.setPen(
-                    QPen(
-                        self.HANDLE_BORDER_COLOR, 1
-                    )
-                )
-            painter.drawRect(hrect)
+            pen = QPen(self.HANDLE_BORDER_COLOR, 1)
+            pen.setCosmetic(True)
+            painter.setPen(pen)
+            painter.drawEllipse(hrect)
 
     def handle_at(self, pos: QPointF):
         """Return the handle ID at the given local position, if any."""
@@ -409,3 +433,4 @@ class TransformHandler:
         """Clear cached handle positions so they will be recomputed."""
         self._handles_cache = None
         self._last_rect = None
+        self._last_scale = None

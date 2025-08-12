@@ -82,7 +82,9 @@ class BaseDrawingItem(QGraphicsItem):
     def _paint_hover(self, painter: QPainter) -> None:
         """Draw a dashed rectangle on hover when not selected."""
         rect = self.contentRect()
-        painter.setPen(QPen(QColor("#888888"), 1, Qt.PenStyle.DashLine))
+        pen = QPen(QColor("#888888"), 1, Qt.PenStyle.DashLine)
+        pen.setCosmetic(True)
+        painter.setPen(pen)
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawRect(rect)
 
