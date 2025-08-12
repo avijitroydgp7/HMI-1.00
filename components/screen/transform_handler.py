@@ -159,10 +159,6 @@ class TransformHandler:
 
     def paint(self, painter: QPainter, option=None, widget=None):
         """Draw selection outline, rotation connector, and handles."""
-        # Skip drawing handles while parent item is being dragged
-        if getattr(self.parent_item, "_is_moving", False):
-            return
-
         self.update_handles()
         rect = self.parent_item.contentRect()
 

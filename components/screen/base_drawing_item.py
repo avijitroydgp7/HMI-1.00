@@ -106,8 +106,6 @@ class BaseDrawingItem(QGraphicsItem):
         # When starting a move via mouse press, mark `_is_moving`
         if event.button() == Qt.MouseButton.LeftButton:
             self._is_moving = True
-            # Invalidate transform cache so handles disappear while moving
-            self.transform_handler.invalidate_cache()
             self.setCursor(Qt.CursorShape.ClosedHandCursor)
 
         super().mousePressEvent(event)
@@ -139,7 +137,7 @@ class BaseDrawingItem(QGraphicsItem):
             event.accept()
             return
 
-        if event.button() == Qt.MouseButton.LeftButton and self._is_moving:
+        if self._is_moving:
             self._is_moving = False
             # Recalculate handles and repaint
             self.transform_handler.invalidate_cache()
