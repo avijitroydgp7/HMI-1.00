@@ -1,5 +1,5 @@
 from PyQt6.QtCore import Qt, QRectF, QPointF
-from PyQt6.QtGui import QPainter, QPen, QColor
+from PyQt6.QtGui import QPainter, QPen, QColor, QPainterPath
 from PyQt6.QtWidgets import (
     QGraphicsItem,
     QStyleOptionGraphicsItem,
@@ -32,9 +32,28 @@ class BaseDrawingItem(QGraphicsItem):
         # Dictionary to store arbitrary properties
         self.properties = {}
 
-    def boundingRect(self) -> QRectF:
-        """Return the item’s bounding rectangle (override in subclasses)."""
+    # ------------------------------------------------------------------
+    # Geometry helpers
+    # ------------------------------------------------------------------
+    def contentRect(self) -> QRectF:
+        """Return the rectangle occupied by the item's actual content."""
         raise NotImplementedError
+
+    def boundingRect(self) -> QRectF:
+        """Return bounding rect expanded to fit transform handles."""
+        rect = QRectF(self.contentRect())
+        hs = self.transform_handler.handle_size
+        sp = self.transform_handler.handle_space
+        rot = self.transform_handler.rotation_offset
+        margin = hs + sp
+        top_margin = rot + hs
+        return rect.adjusted(-margin, -top_margin, margin, margin)
+
+    def shape(self) -> QPainterPath:
+        """Shape used for selection and collision is just the content rect."""
+        path = QPainterPath()
+        path.addRect(self.contentRect())
+        return path
 
     def paint(
         self,
@@ -62,7 +81,7 @@ class BaseDrawingItem(QGraphicsItem):
 
     def _paint_hover(self, painter: QPainter) -> None:
         """Draw a dashed rectangle on hover when not selected."""
-        rect = self.boundingRect()
+        rect = self.contentRect()
         painter.setPen(QPen(QColor("#888888"), 1, Qt.PenStyle.DashLine))
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawRect(rect)
@@ -160,14 +179,18 @@ class BaseDrawingItem(QGraphicsItem):
             # Skip drawing handles while moving; cache invalidated on release
             self.transform_handler.invalidate_cache()
         elif (
-            change == QGraphicsItem.GraphicsItemChange.ItemSelectedChange
+            change
+            == QGraphicsItem.GraphicsItemChange.ItemSelectedChange
         ):
-            # Force a repaint so handles appear/disappear immediately
+            # Selection toggled; refresh handles and repaint immediately
+            self.prepareGeometryChange()
+            self.transform_handler.invalidate_cache()
             self.update()
         return super().itemChange(change, value)
 
     def update_properties(self, props):
         """Update this item's properties dictionary and refresh handles."""
+        self.prepareGeometryChange()
         for k, v in props.items():
             self.properties[k] = v
         self.transform_handler.invalidate_cache()

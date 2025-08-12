@@ -72,11 +72,14 @@ class ButtonGraphicsItem(BaseDrawingItem):
             **self.element_data.properties
         }
 
-    def boundingRect(self) -> QRectF:
-        """Return the bounding rectangle of the button."""
-        return QRectF(0, 0, 
-                     self.element_data.size['width'], 
-                     self.element_data.size['height'])
+    def contentRect(self) -> QRectF:
+        """Return the rectangle occupied by the button content."""
+        return QRectF(
+            0,
+            0,
+            self.element_data.size['width'],
+            self.element_data.size['height'],
+        )
 
     def _paint_content(self, painter: QPainter, option, widget=None) -> None:
         """Paint the button with LOD."""
@@ -85,7 +88,7 @@ class ButtonGraphicsItem(BaseDrawingItem):
         bg_color = QColor(self.element_data.properties.get('background_color', '#5a6270'))
         painter.setBrush(QBrush(bg_color))
         painter.setPen(QPen(Qt.PenStyle.NoPen))
-        painter.drawRect(self.boundingRect())
+        painter.drawRect(self.contentRect())
 
         if lod > LOD_THRESHOLD:
             text_color = QColor(self.element_data.properties.get('text_color', '#ffffff'))
@@ -95,7 +98,11 @@ class ButtonGraphicsItem(BaseDrawingItem):
             painter.setFont(font)
             
             label = self.element_data.properties.get('label', 'Button')
-            painter.drawText(self.boundingRect(), Qt.AlignmentFlag.AlignCenter, label)
+            painter.drawText(
+                self.contentRect(),
+                Qt.AlignmentFlag.AlignCenter,
+                label,
+            )
             
     def mouseDoubleClickEvent(self, event: QGraphicsSceneMouseEvent) -> None:
         """Handle double-click to open button properties dialog."""
@@ -129,22 +136,18 @@ class ButtonGraphicsItem(BaseDrawingItem):
         
     def update_properties(self, props):
         """Update button properties."""
-        # Update element_data properties
-        for k, v in props.items():
-            self.element_data.properties[k] = v
-            
-        # Update base properties for transform handler
-        super().update_properties(props)
-        
-        # Update size if changed
+        if 'width' in props or 'height' in props:
+            self.prepareGeometryChange()
+
         if 'width' in props:
             self.element_data.size['width'] = props['width']
-            self.properties['width'] = props['width']
-        
         if 'height' in props:
             self.element_data.size['height'] = props['height']
-            self.properties['height'] = props['height']
-            
+
+        for k, v in props.items():
+            self.element_data.properties[k] = v
+
+        super().update_properties(props)         
         self.update()
 
 

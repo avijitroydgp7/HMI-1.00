@@ -29,20 +29,18 @@ class PolygonTool(BaseDrawingItem):
             "border_width": 2
         }
     
-    def boundingRect(self):
-        """
-        Return the bounding rectangle of the polygon.
-        """
+    def contentRect(self):
+        """Return the rectangle occupied by the polygon's content."""
         points = self.properties["points"]
         if not points:
             return QRectF(0, 0, 0, 0)
-        
+
         x_values = [p[0] for p in points]
         y_values = [p[1] for p in points]
         
         min_x, max_x = min(x_values), max(x_values)
         min_y, max_y = min(y_values), max(y_values)
-        
+
         return QRectF(min_x, min_y, max_x - min_x, max_y - min_y)
     
     def _paint_content(self, painter, option, widget=None):
@@ -83,5 +81,3 @@ class PolygonTool(BaseDrawingItem):
                 props["points"] = [(x - min_x, y - min_y) for x, y in new_points]
         
         super().update_properties(props)
-        self.prepareGeometryChange()
-        self.update()

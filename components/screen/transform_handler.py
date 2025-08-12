@@ -45,7 +45,7 @@ class TransformHandler:
 
     def update_handles(self):
         """Recompute handle rectangles if necessary."""
-        rect = self.parent_item.boundingRect()
+        rect = self.parent_item.contentRect()
         if (
             self._handles_cache is not None
             and self._last_rect == rect
@@ -123,7 +123,7 @@ class TransformHandler:
             return
 
         self.update_handles()
-        rect = self.parent_item.boundingRect()
+        rect = self.parent_item.contentRect()
 
         # Draw dashed selection outline
         painter.setPen(
@@ -202,7 +202,7 @@ class TransformHandler:
         """Store initial geometry and position for transformations."""
         self.active_handle = handle_id
         self.start_rect = QRectF(
-            self.parent_item.boundingRect()
+            self.parent_item.contentRect()
         )
         self.start_pos = QPointF(pos)
         self.start_transform = (
@@ -256,7 +256,7 @@ class TransformHandler:
         elif self.active_handle == self.ROTATION:
             # Rotate around the local center
             center = (
-                self.parent_item.boundingRect().center()
+                self.parent_item.contentRect().center()
             )
             start_vec = self.start_pos - center
             curr_vec = pos - center
@@ -326,7 +326,6 @@ class TransformHandler:
                 center_x = rect.center().x()
                 rect.setLeft(center_x - width / 2)
                 rect.setRight(center_x + width / 2)
-
 
         # Enforce a minimum size
         min_size = 8.0

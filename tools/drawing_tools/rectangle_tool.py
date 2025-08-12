@@ -20,10 +20,8 @@ class RectangleTool(BaseDrawingItem):
             "border_width": 2
         }
     
-    def boundingRect(self):
-        """
-        Return the bounding rectangle of the rectangle.
-        """
+    def contentRect(self):
+        """Return the rectangle occupied by the rectangle's content."""
         return QRectF(0, 0, self.properties["width"], self.properties["height"])
     
     def _paint_content(self, painter, option, widget=None):
@@ -37,13 +35,4 @@ class RectangleTool(BaseDrawingItem):
         # Draw the rectangle
         painter.setBrush(brush)
         painter.setPen(pen)
-        painter.drawRect(self.boundingRect())
-
-    
-    def update_properties(self, props):
-        """
-        Update rectangle properties.
-        """
-        super().update_properties(props)
-        self.prepareGeometryChange()
-        self.update()
+        painter.drawRect(self.contentRect())

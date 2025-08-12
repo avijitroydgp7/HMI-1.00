@@ -19,11 +19,14 @@ class CircleTool(BaseDrawingItem):
             "border_width": 2
         }
     
-    def boundingRect(self):
-        """
-        Return the bounding rectangle of the circle.
-        """
-        return QRectF(0, 0, self.properties["diameter"], self.properties["diameter"])
+    def contentRect(self):
+        """Return the rectangle occupied by the circle's content."""
+        return QRectF(
+            0,
+            0,
+            self.properties["diameter"],
+            self.properties["diameter"],
+        )
     
     def _paint_content(self, painter, option, widget=None):
         """
@@ -36,12 +39,4 @@ class CircleTool(BaseDrawingItem):
         # Draw the circle
         painter.setBrush(brush)
         painter.setPen(pen)
-        painter.drawEllipse(self.boundingRect())
-    
-    def update_properties(self, props):
-        """
-        Update circle properties.
-        """
-        super().update_properties(props)
-        self.prepareGeometryChange()
-        self.update()
+        painter.drawEllipse(self.contentRect())

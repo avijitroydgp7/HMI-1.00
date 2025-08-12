@@ -48,10 +48,8 @@ class TextTool(BaseDrawingItem):
         font.setItalic(self.properties.get("italic", False))
         return font
     
-    def boundingRect(self):
-        """
-        Return the bounding rectangle of the text.
-        """
+    def contentRect(self):
+        """Return the rectangle occupied by the text content."""
         return self._text_rect
     
     def _paint_content(self, painter, option, widget=None):
@@ -63,7 +61,7 @@ class TextTool(BaseDrawingItem):
         painter.setPen(QColor(self.properties["color"]))
         
         # Draw the text
-        rect = self.boundingRect()
+        rect = self.contentRect()
         padding = 5
         text_rect = rect.adjusted(padding, padding, -padding, -padding)
         painter.drawText(text_rect, self.properties.get("alignment", Qt.AlignmentFlag.AlignLeft), self.properties["text"])
@@ -73,9 +71,12 @@ class TextTool(BaseDrawingItem):
         Update text properties.
         """
         super().update_properties(props)
-        
+
         # Recalculate text rectangle if text or font properties change
-        if any(key in props for key in ["text", "font_size", "font_family", "bold", "italic"]):
+        if any(
+            key in props
+            for key in ["text", "font_size", "font_family", "bold", "italic"]
+        ):
+            self.prepareGeometryChange()
             self._text_rect = self._calculate_text_rect()
-        self.prepareGeometryChange()
-        self.update()
+            self.update()
