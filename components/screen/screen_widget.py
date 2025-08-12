@@ -339,7 +339,11 @@ class ScreenCanvas(QGraphicsView):
                 [{'instance_id': item_id} for item_id in ids]
             )
         )
-        self.selection_manager.item_moved.connect(lambda item_id, old_pos, new_pos: self.selection_dragged.emit({'item_id': item_id, 'old_pos': old_pos, 'new_pos': new_pos}))
+        self.selection_manager.item_moved.connect(
+            lambda item_id, old_pos, new_pos: self.selection_dragged.emit(
+                {'item_id': item_id, 'old_pos': old_pos, 'new_pos': new_pos}
+            )
+        )
 
         # State for marquee (drag) selection
         self._marquee_origin = QPointF()
