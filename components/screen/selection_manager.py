@@ -167,6 +167,12 @@ class SelectionManager(QObject):
             return getattr(
                 element_data, "element_id"
             )
+        # Fall back to the instance ID stored in the item's user data
+        # (role 0), which is used by generic drawing tools.  If not
+        # available, use the Python object id as a last resort.
+        item_id = item.data(0)
+        if item_id is not None:
+            return str(item_id)
         return str(id(item))
 
     def handle_mouse_press(self, event, item=None):
