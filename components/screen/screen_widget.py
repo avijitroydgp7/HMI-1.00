@@ -17,6 +17,8 @@ from PyQt6.QtGui import (
 
 from services.screen_data_service import screen_service
 from services.settings_service import settings_service
+from services.commands import MoveChildCommand
+from services.command_history_service import command_history_service
 from utils import constants
 
 from tools.drawing_tools.rectangle_tool import RectangleTool
@@ -339,11 +341,7 @@ class ScreenCanvas(QGraphicsView):
                 [{'instance_id': item_id} for item_id in ids]
             )
         )
-        self.selection_manager.item_moved.connect(
-            lambda item_id, old_pos, new_pos: self.selection_dragged.emit(
-                {'item_id': item_id, 'old_pos': old_pos, 'new_pos': new_pos}
-            )
-        )
+        self.selection_manager.item_moved.connect(self._on_item_moved)
 
         # State for marquee (drag) selection
         self._marquee_origin = QPointF()
@@ -373,7 +371,7 @@ class ScreenCanvas(QGraphicsView):
         self.setViewportUpdateMode(QGraphicsView.ViewportUpdateMode.BoundingRectViewportUpdate)
         self.setOptimizationFlags(QGraphicsView.OptimizationFlag.DontSavePainterState)
 
-        
+
         # User interaction
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
         self.setMouseTracking(True)
@@ -381,7 +379,18 @@ class ScreenCanvas(QGraphicsView):
         self.setFrameShape(QFrame.Shape.NoFrame)
         self.setObjectName("ScreenCanvas")
 
-    
+    def _on_item_moved(self, item_id: str, old_pos: QPointF, new_pos: QPointF) -> None:
+        """Update screen data when an item is moved and emit drag info."""
+        new_pos_dict = {"x": int(new_pos.x()), "y": int(new_pos.y())}
+        old_pos_dict = {"x": int(old_pos.x()), "y": int(old_pos.y())}
+        command = MoveChildCommand(self.screen_id, item_id, new_pos_dict, old_pos_dict)
+        command_history_service.add_command(command)
+
+        # Preserve existing behavior of reporting drag information
+        self.selection_dragged.emit(
+            {"item_id": item_id, "old_pos": old_pos, "new_pos": new_pos}
+        )
+
 
     def update_screen_data(self, screen_data: Optional[Dict[str, Any]]) -> None:
         """Update the canvas with new screen data."""
