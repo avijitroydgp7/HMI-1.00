@@ -327,6 +327,7 @@ class ScreenCanvas(QGraphicsView):
         self.placement_tool = None
         self.preview_item = None
         self.last_mouse_pos = QPointF(0, 0)
+        self._drag_start_pos: Optional[QPointF] = None
         
         self._setup_scene()
         # Selection and movement
@@ -556,33 +557,29 @@ class ScreenCanvas(QGraphicsView):
         if self.active_tool == constants.TOOL_SELECT:
             item = self.itemAt(event.pos())
             self.selection_manager.handle_mouse_press(event, item)
-
-            if item and item.isSelected():
-                self.selection_manager.start_move(scene_pos)
-            else:
-                if (
-                    event.button() == Qt.MouseButton.LeftButton
-                    and not item
-                ):
-                    # Begin marquee selection
-                    self._marquee_origin = scene_pos
-                    self._marquee_active = True
-                    self._marquee_rect_item = QGraphicsRectItem()
-                    self._marquee_rect_item.setRect(QRectF(scene_pos, scene_pos))
-                    pen = QPen(
-                        self.transform_handler.HANDLE_COLOR,
-                        1,
-                        Qt.PenStyle.DashLine,
-                    )
-                    self._marquee_rect_item.setPen(pen)
-                    self._marquee_rect_item.setBrush(Qt.BrushStyle.NoBrush)
-                    self._marquee_rect_item.setFlag(
-                        QGraphicsItem.GraphicsItemFlag.ItemIsSelectable,
-                        False,
-                    )
-                    self._marquee_rect_item.setZValue(10_000)
-                    self._scene.addItem(self._marquee_rect_item)
-                    event.accept()
+            self._drag_start_pos = None
+            if item and item.isSelected() and event.button() == Qt.MouseButton.LeftButton:
+                self._drag_start_pos = scene_pos
+            elif event.button() == Qt.MouseButton.LeftButton and not item:
+                # Begin marquee selection
+                self._marquee_origin = scene_pos
+                self._marquee_active = True
+                self._marquee_rect_item = QGraphicsRectItem()
+                self._marquee_rect_item.setRect(QRectF(scene_pos, scene_pos))
+                pen = QPen(
+                    self.transform_handler.HANDLE_COLOR,
+                    1,
+                    Qt.PenStyle.DashLine,
+                )
+                self._marquee_rect_item.setPen(pen)
+                self._marquee_rect_item.setBrush(Qt.BrushStyle.NoBrush)
+                self._marquee_rect_item.setFlag(
+                    QGraphicsItem.GraphicsItemFlag.ItemIsSelectable,
+                    False,
+                )
+                self._marquee_rect_item.setZValue(10_000)
+                self._scene.addItem(self._marquee_rect_item)
+                event.accept()
 
             return
 
@@ -613,6 +610,14 @@ class ScreenCanvas(QGraphicsView):
                 if self._marquee_rect_item:
                     self._marquee_rect_item.setRect(rect)
                 event.accept()
+                return
+            if (
+                event.buttons() & Qt.MouseButton.LeftButton
+                and self._drag_start_pos is not None
+            ):
+                if not self.selection_manager._is_moving:
+                    self.selection_manager.start_move(self._drag_start_pos)
+                self.selection_manager.update_move(scene_pos)
                 return
             if self.selection_manager._is_moving:
                 self.selection_manager.update_move(scene_pos)
@@ -741,15 +746,17 @@ class ScreenCanvas(QGraphicsView):
                         self.selection_manager.toggle_selection(it)
                 else:
                     self.selection_manager.clear_selection()
-                    for it in items_to_process:
-                        self.selection_manager.select_item(it, True)
+                for it in items_to_process:
+                    self.selection_manager.select_item(it, True)
 
                 event.accept()
+                self._drag_start_pos = None
                 return
 
             if self.selection_manager._is_moving:
                 self.selection_manager.finish_move(scene_pos)
                 event.accept()
+            self._drag_start_pos = None
         super().mouseReleaseEvent(event)
 
     
